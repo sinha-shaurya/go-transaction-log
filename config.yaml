@@ -1,0 +1,6 @@
+mysql:
+  host: localhost:3310
+  username: root
+  password: root
+  debug: true
+  dbname : logs
