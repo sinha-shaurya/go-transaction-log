@@ -108,6 +108,8 @@ func buildMetaForTransaction(parentTransactionId *uint64, ancestorIds []uint64) 
 		parentTransactionIds = append(parentTransactionIds, ancestorIds...)
 	}
 
+	parentTransactionIds = append(parentTransactionIds, *parentTransactionId)
+
 	return models.TransactionMeta{ParentIds: parentTransactionIds}
 }
 
@@ -178,14 +180,14 @@ func SumTransactions(db *gorm.DB, id uint64) (float64, *httperrors.HttpError) {
 
 	// get all parent ids
 	ancestorAmounts, err := computeAmountForAncestorTransactions(db, parentIds)
-	if err !=nil{
+	if err != nil {
 		return 0.0, err
 	}
 
-	return transcations[0].Amount + ancestorAmounts , nil
+	return transcations[0].Amount + ancestorAmounts, nil
 }
 
-func computeAmountForAncestorTransactions(db *gorm.DB, ancestorIds []uint64) (float64, *httperrors.HttpError){
+func computeAmountForAncestorTransactions(db *gorm.DB, ancestorIds []uint64) (float64, *httperrors.HttpError) {
 	ancestorTransactions, dbErr := repository.GetTransactionByIds(db, ancestorIds)
 	if dbErr != nil {
 		if errors.Is(dbErr, gorm.ErrRecordNotFound) {
@@ -201,7 +203,7 @@ func computeAmountForAncestorTransactions(db *gorm.DB, ancestorIds []uint64) (fl
 	}
 
 	amount := 0.0
-	for _ , transaction := range ancestorTransactions{
+	for _, transaction := range ancestorTransactions {
 		amount += transaction.Amount
 	}
 
